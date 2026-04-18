@@ -3,17 +3,20 @@ export function cn(...classes: Array<string | false | null | undefined>) {
 }
 
 export function formatCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-LK", {
     style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
+    currency: "LKR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(value);
 }
 
 export function formatFullCurrency(value: number) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-LK", {
     style: "currency",
-    currency: "USD",
+    currency: "LKR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(value);
 }
 
