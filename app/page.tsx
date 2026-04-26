@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { api } from "@/lib/api";
+import type { CategoriesResponse, EventsResponse } from "@/lib/api/types";
 
 const benefits = [
   "Live inventory is sourced from the event service through the gateway",
@@ -14,7 +15,15 @@ const benefits = [
 ];
 
 export default async function HomePage() {
-  const [eventsResponse, categories] = await Promise.all([api.events.list({ size: 4 }), api.events.categories()]);
+  let eventsResponse: EventsResponse = { dataList: [], dataCount: 0 };
+  let categories: CategoriesResponse = [];
+
+  try {
+    [eventsResponse, categories] = await Promise.all([api.events.list({ size: 4 }), api.events.categories()]);
+  } catch (error) {
+    console.error("Failed to load homepage data", error);
+  }
+
   const featuredEvents = eventsResponse.dataList.slice(0, 4);
   const featuredCategories = categories.slice(0, 6);
 

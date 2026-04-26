@@ -5,12 +5,12 @@ import { refreshAccessTokenWithStoredToken } from "@/lib/auth";
 
 type ApiRequestOptions = Omit<RequestInit, "body"> & {
   body?: BodyInit | object;
+  baseUrl?: string;
   token?: string;
 };
 
 export async function apiRequest<T>(path: string, options: ApiRequestOptions = {}): Promise<T> {
-  const { body, headers, token, ...rest } = options;
-  const baseUrl = getApiBaseUrl();
+  const { baseUrl = getApiBaseUrl(), body, headers, token, ...rest } = options;
 
   const requestBody =
     body && !(body instanceof FormData) && typeof body !== "string"
