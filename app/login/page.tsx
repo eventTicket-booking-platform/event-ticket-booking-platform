@@ -82,6 +82,15 @@ export default function LoginPage() {
               {loading ? "Signing In..." : "Sign In"}
             </button>
             <p className="text-sm text-white/55">
+              Need to verify your email?{" "}
+              <Link
+                href={email ? `/verify-email?email=${encodeURIComponent(email)}` : "/verify-email"}
+                className="font-semibold text-white"
+              >
+                Verify now
+              </Link>
+            </p>
+            <p className="text-sm text-white/55">
               New here?{" "}
               <Link href="/register" className="font-semibold text-white">
                 Create an account

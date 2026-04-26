@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ const requirements = [
 ];
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -64,7 +66,8 @@ export default function RegisterPage() {
                   password: form.password,
                   contact: form.contact || undefined,
                 });
-                snackbar.success("Account created. Check your email for the OTP verification code.");
+                snackbar.success("Account created. Verify your email with the OTP.");
+                router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
               } catch (err) {
                 snackbar.error(err instanceof ApiError ? err.message : "Unable to register");
               } finally {
