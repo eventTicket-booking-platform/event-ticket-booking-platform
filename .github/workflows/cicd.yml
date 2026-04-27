@@ -76,7 +76,7 @@ jobs:
           context: .
           push: true
           build-args: |
-            NEXT_PUBLIC_API_BASE_URL=.
+            NEXT_PUBLIC_API_BASE_URL=/api
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 

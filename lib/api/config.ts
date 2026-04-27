@@ -4,7 +4,11 @@ export function getApiBaseUrl() {
       ? process.env.SERVER_API_BASE_URL || "http://gateway-service:9090/api"
       : process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
 
-  return baseUrl.replace(/\/+$/, "");
+  if (baseUrl === "." || baseUrl === "./") {
+    return "";
+  }
+
+  return normalizeBaseUrl(baseUrl);
 }
 
 export function getEventApiBaseUrl() {
@@ -13,5 +17,13 @@ export function getEventApiBaseUrl() {
       ? process.env.SERVER_EVENTS_API_BASE_URL || "http://event-service:9091"
       : process.env.NEXT_PUBLIC_API_BASE_URL || "/api";
 
+  if (baseUrl === "." || baseUrl === "./") {
+    return "";
+  }
+
+  return normalizeBaseUrl(baseUrl);
+}
+
+function normalizeBaseUrl(baseUrl: string) {
   return baseUrl.replace(/\/+$/, "");
 }
