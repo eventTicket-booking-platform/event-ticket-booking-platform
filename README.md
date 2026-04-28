@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Event Ticket Booking Platform
 
-## Getting Started
+Public-facing frontend for Event Hub. This Next.js application handles event discovery, account flows, booking checkout, and the user booking dashboard.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js 16 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+
+## Features
+
+- Homepage with live featured events and categories
+- Event discovery with search, category, and city filters
+- Event detail pages with venue and ticket tiers
+- Multi-step booking checkout
+- User registration
+- Login
+- Email verification and OTP resend
+- Forgot-password flow with OTP verification and password reset
+- Authenticated user dashboard
+- Booking history and upcoming bookings
+- Profile avatar upload
+- Health route for runtime checks
+
+## Route Map
+
+- `/`
+- `/events`
+- `/categories`
+- `/event/[id]`
+- `/booking/[id]`
+- `/login`
+- `/register`
+- `/verify-email`
+- `/forgot-password`
+- `/dashboard`
+- `/support`
+- `/healthz`
+
+## Backend Integration
+
+This frontend now calls live backend APIs through the gateway.
+
+Main integrations:
+
+- auth: login, register, verify email, resend OTP, request password reset, verify password reset, reset password, profile, avatar upload
+- events: list, categories, event detail
+- bookings: create booking, current user bookings, booking detail
+
+Default browser base URL:
+
+- `NEXT_PUBLIC_API_BASE_URL=/api`
+
+Server-side data fetching also supports:
+
+- `SERVER_API_BASE_URL`
+- `SERVER_EVENTS_API_BASE_URL`
+
+## Notes on Current Behavior
+
+- Tokens are stored in `localStorage`.
+- There is refresh-token support in `lib/auth.ts`.
+- The app includes an API helper for booking cancel, but the current booking backend does not expose that endpoint.
+
+## Local Setup
+
+1. Install dependencies:
+
+```powershell
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Create `.env.local` or use the provided example values:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+NEXT_PUBLIC_API_BASE_URL=/api
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Ensure these backend services are running:
+   - `gateway-service-api`
+   - `auth-service-api`
+   - `event-service-api`
+   - `booking-service-api`
 
-## Learn More
+4. Start the app:
 
-To learn more about Next.js, take a look at the following resources:
+```powershell
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Default port: `3000`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Production
 
-## Deploy on Vercel
+```powershell
+npm run build
+npm run start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Container Health
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The Kubernetes deployment uses:
+
+- `GET /healthz`
