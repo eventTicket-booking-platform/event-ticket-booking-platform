@@ -256,6 +256,28 @@ test('POST token-refresh retry preserves the application body and updates bearer
   assert.match(container.textContent, /Host application is under review/);
 });
 
+for (const method of ['GET', 'POST']) {
+  test(`HOST authority acquired during ${method} token refresh shows dashboard guidance instead of an authorization error`, async () => {
+    let attempts = 0;
+    await mount((_url, options) => options.method !== method ? missing()
+      : ++attempts === 1 ? new Response('', { status: 401 }) : new Response('', { status: 403 }), async () => {
+        const renewed = token(['user', 'host']);
+        auth.setStoredAccessToken(renewed);
+        return renewed;
+      });
+    if (method === 'POST') {
+      await fill('organizationName', 'Org');
+      await submit();
+    }
+    assert.equal(attempts, 2);
+    assert.match(container.textContent, /already has dashboard access/);
+    assert.equal(container.querySelector('a').href, 'http://host-dashboard.test/login');
+    assert.equal(container.querySelector('form'), null);
+    assert.equal(container.querySelector('[role="alert"]'), null);
+    assert.ok(notices.every(notice => notice.variant !== 'error'));
+  });
+}
+
 test('normal customer navigation includes Become a Host in desktop and mobile menus only', async () => {
   const { Navbar } = load('components/navbar.tsx', {
     react: React, 'react/jsx-runtime': jsx, 'next/link': link,

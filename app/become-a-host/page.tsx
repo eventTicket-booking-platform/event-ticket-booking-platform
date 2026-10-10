@@ -81,6 +81,9 @@ export default function BecomeAHostPage() {
           setError("Session expired. Please sign in again.");
           snackbar.warning("Session expired. Please sign in again.");
           router.replace("/login");
+        } else if (err instanceof ApiError && err.status === 403 && isDashboardUser(getStoredAccessToken() ?? "")) {
+          // Refresh may have issued HOST authority; /me is intentionally customer-only.
+          setDashboardUser(true);
         } else {
           const message = errorMessage(err);
           setError(message);
@@ -131,8 +134,12 @@ export default function BecomeAHostPage() {
         setLoading(true);
         setReload((value) => value + 1);
       } else if (err instanceof ApiError && err.status === 403) {
-        setError(errorMessage(err));
-        snackbar.error(errorMessage(err));
+        if (isDashboardUser(getStoredAccessToken() ?? "")) {
+          setDashboardUser(true);
+        } else {
+          setError(errorMessage(err));
+          snackbar.error(errorMessage(err));
+        }
       } else {
         // Keep the form and entered values for validation/network retries; never display raw backend errors.
         snackbar.error(errorMessage(err));
