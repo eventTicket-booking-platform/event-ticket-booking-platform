@@ -1,4 +1,3 @@
-import { getEventApiBaseUrl } from "@/lib/api/config";
 import { apiRequest } from "@/lib/api/fetcher";
 import { toQueryString } from "@/lib/api/query";
 import type {
@@ -104,21 +103,18 @@ export const api = {
       size?: number;
     } = {}) {
       return apiRequest<EventsResponse>(`/event-service/api/v1/events${toQueryString(params)}`, {
-        baseUrl: getEventApiBaseUrl(),
         method: "GET",
         cache: "no-store",
       });
     },
     byId(id: number | string) {
       return apiRequest<EventResponse>(`/event-service/api/v1/events/${id}`, {
-        baseUrl: getEventApiBaseUrl(),
         method: "GET",
         cache: "no-store",
       });
     },
     categories() {
       return apiRequest<CategoriesResponse>("/event-service/api/v1/events/categories", {
-        baseUrl: getEventApiBaseUrl(),
         method: "GET",
         cache: "no-store",
       });

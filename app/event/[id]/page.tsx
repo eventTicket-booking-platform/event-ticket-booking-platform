@@ -8,6 +8,8 @@ import { Card } from "@/components/ui/card";
 import { api } from "@/lib/api";
 import { formatDateTime } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export default async function EventDetailPage({
   params,
 }: {

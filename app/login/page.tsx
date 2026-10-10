@@ -25,9 +25,9 @@ export default function LoginPage() {
       <div className="grid w-full gap-8 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="space-y-5">
           <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">Sign In</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white">Access your bookings and upcoming events.</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-white">Welcome back to Event Hub.</h1>
           <p className="max-w-lg text-sm leading-7 text-white/62">
-            This page now authenticates against the auth service through the gateway and stores the access token locally.
+            Sign in to view your bookings, manage your tickets, and continue exploring upcoming events.
           </p>
         </div>
         <Card className="p-8">

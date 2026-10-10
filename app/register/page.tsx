@@ -43,9 +43,9 @@ export default function RegisterPage() {
       <div className="grid w-full gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="space-y-5">
           <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">Register</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white">Create an account with the auth service.</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-white">Create your Event Hub account.</h1>
           <p className="max-w-lg text-sm leading-7 text-white/62">
-            Registration now submits directly to the backend signup API. Email verification is still required afterward.
+            Join Event Hub to book events faster, save your details, and manage your tickets in one place.
           </p>
         </div>
         <Card className="p-8">
@@ -66,7 +66,7 @@ export default function RegisterPage() {
                   password: form.password,
                   contact: form.contact || undefined,
                 });
-                snackbar.success("Account created. Verify your email with the OTP.");
+                snackbar.success("Account created. Verify your email with the verification code.");
                 router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
               } catch (err) {
                 snackbar.error(err instanceof ApiError ? err.message : "Unable to register");

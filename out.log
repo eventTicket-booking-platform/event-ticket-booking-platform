@@ -1,0 +1,12 @@
+
+> event-ticket-booking-platform@0.1.0 start
+> next start
+
+▲ Next.js 16.2.2
+- Local:         http://localhost:3011
+- Network:       http://192.168.56.1:3011
+✓ Ready in 248ms
+⨯ Error: The router state header was sent but could not be parsed.
+    at ignore-listed frames
+⨯ Error: The router state header was sent but could not be parsed.
+    at ignore-listed frames

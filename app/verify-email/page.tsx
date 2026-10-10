@@ -39,7 +39,7 @@ export default function VerifyEmailPage() {
       snackbar.success("Email verified successfully. Please sign in.");
       router.push("/login");
     } catch (err) {
-      snackbar.error(err instanceof ApiError ? err.message : "Invalid OTP.");
+      snackbar.error(err instanceof ApiError ? err.message : "Invalid verification code.");
     } finally {
       setLoading(false);
     }
@@ -53,9 +53,9 @@ export default function VerifyEmailPage() {
     try {
       setLoading(true);
       await api.auth.resendOtp({ email, type: "SIGNUP" });
-      snackbar.success("A new OTP has been sent to your email.");
+      snackbar.success("A new verification code has been sent to your email.");
     } catch (err) {
-      snackbar.error(err instanceof ApiError ? err.message : "Unable to resend OTP.");
+      snackbar.error(err instanceof ApiError ? err.message : "Unable to resend verification code.");
     } finally {
       setLoading(false);
     }
@@ -66,9 +66,9 @@ export default function VerifyEmailPage() {
       <div className="grid w-full gap-8 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="space-y-5">
           <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">Verify Email</p>
-          <h1 className="text-4xl font-semibold tracking-tight text-white">Complete your account verification.</h1>
+          <h1 className="text-4xl font-semibold tracking-tight text-white">Verify your email address.</h1>
           <p className="max-w-lg text-sm leading-7 text-white/62">
-            Enter the OTP sent to your email address to activate your account.
+            Enter the verification code we sent to your email to activate your account and start booking events.
           </p>
           <div className="flex items-center gap-3 text-xs text-white/55">
             <span className="text-white">1. Register</span>
@@ -91,7 +91,7 @@ export default function VerifyEmailPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-white/65">OTP Code</label>
+              <label className="text-sm text-white/65">Verification code</label>
               <Input
                 value={otp}
                 onChange={(event) => setOtp(event.target.value)}
@@ -114,7 +114,7 @@ export default function VerifyEmailPage() {
               disabled={!emailValid || loading}
               onClick={() => void handleResendOtp()}
             >
-              Resend OTP
+              Resend code
             </button>
 
             <p className="text-sm text-white/55">
