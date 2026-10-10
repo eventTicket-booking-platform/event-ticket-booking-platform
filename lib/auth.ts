@@ -16,6 +16,20 @@ type StandardResponse<T> = {
 
 let refreshPromise: Promise<string | null> | null = null;
 
+// UI hints only. The backend validates the JWT and enforces authorization.
+export function getRealmRoles(token: string | null): string[] {
+  if (!token) return [];
+  try {
+    const encoded = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(encoded.padEnd(Math.ceil(encoded.length / 4) * 4, "=")));
+    const roles: unknown = payload?.realm_access?.roles;
+    return Array.isArray(roles) ? roles.filter((role): role is string => typeof role === "string")
+      .map((role) => role.toLowerCase()) : [];
+  } catch {
+    return [];
+  }
+}
+
 export function getStoredAccessToken() {
   if (typeof window === "undefined") {
     return null;

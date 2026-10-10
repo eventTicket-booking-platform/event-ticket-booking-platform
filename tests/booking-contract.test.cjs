@@ -1,27 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { readFileSync } = require('node:fs');
-const path = require('node:path');
-const vm = require('node:vm');
-const crypto = require('node:crypto');
-const ts = require('typescript');
-
-// Exercise the actual TypeScript modules with controlled HTTP/auth dependencies.
-// Uses Node's test runner and the project's existing TypeScript dependency.
-function load(file, dependencies = {}, globals = {}) {
-  const module = { exports: {} };
-  const source = ts.transpileModule(readFileSync(path.join(__dirname, '..', file), 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX },
-  }).outputText;
-  vm.runInNewContext(source, {
-    module, exports: module.exports, crypto, Headers, Response, FormData, ...globals,
-    require: (name) => {
-      if (Object.hasOwn(dependencies, name)) return dependencies[name];
-      throw new Error('Unexpected test dependency: ' + name);
-    },
-  }, { filename: file });
-  return module.exports;
-}
+const { load } = require('./helpers/load.cjs');
 
 const { resolveBookingSubmission } = load('lib/booking-submission.ts');
 const payload = { eventId: 1, ticketSelections: [{ ticketTypeId: 2, quantity: 1 }], paymentMethod: 'CARD' };

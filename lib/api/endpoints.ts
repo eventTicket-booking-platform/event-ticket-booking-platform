@@ -10,6 +10,8 @@ import type {
   EventResponse,
   EventsResponse,
   ForgotPasswordPayload,
+  HostApplicationPayload,
+  HostApplicationApiResponse,
   LoginPayload,
   RegisterPayload,
   ResetPasswordPayload,
@@ -90,6 +92,23 @@ export const api = {
       return apiRequest<AuthMessageResponse>("/user-service/api/v1/avatars/user/manage-avatar", {
         method: "POST",
         body: file,
+        token,
+      });
+    },
+  },
+  hostApplications: {
+    me(token: string) {
+      return apiRequest<HostApplicationApiResponse>("/user-service/api/v1/host-applications/me", {
+        method: "GET",
+        token,
+        cache: "no-store",
+      });
+    },
+    apply(payload: HostApplicationPayload, token: string) {
+      return apiRequest<HostApplicationApiResponse>("/user-service/api/v1/host-applications", {
+        method: "POST",
+        // Explicitly select these fields; identity and review fields belong to the backend.
+        body: { organizationName: payload.organizationName, reason: payload.reason },
         token,
       });
     },

@@ -5,7 +5,7 @@ import { useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { MenuIcon } from "@/components/icons";
 import { Button, ButtonLink } from "@/components/ui/button";
-import { clearStoredAccessToken, getStoredAccessToken } from "@/lib/auth";
+import { clearStoredAccessToken, getRealmRoles, getStoredAccessToken } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -17,11 +17,18 @@ const navLinks = [
 export function Navbar() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const isAuthenticated = useSyncExternalStore(
+  const token = useSyncExternalStore(
     () => () => undefined,
-    () => Boolean(getStoredAccessToken()),
-    () => false,
+    getStoredAccessToken,
+    () => null,
   );
+  const isAuthenticated = Boolean(token);
+  const roles = getRealmRoles(token);
+  const canApply = (roles.includes("user") || roles.includes("customer"))
+    && !roles.includes("host") && !roles.includes("admin");
+  const visibleNavLinks = canApply
+    ? [...navLinks, { href: "/become-a-host", label: "Become a Host" }]
+    : navLinks;
 
   function handleLogout() {
     clearStoredAccessToken();
@@ -37,7 +44,7 @@ export function Navbar() {
           EventHub
         </Link>
         <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((item) => (
+          {visibleNavLinks.map((item) => (
             <Link key={item.href} href={item.href} className="text-sm text-white/70 transition hover:text-white">
               {item.label}
             </Link>
@@ -75,7 +82,7 @@ export function Navbar() {
       </div>
       <div className={cn("border-t border-white/8 px-4 py-4 md:hidden", open ? "block" : "hidden")}>
         <div className="mx-auto flex max-w-7xl flex-col gap-4">
-          {navLinks.map((item) => (
+          {visibleNavLinks.map((item) => (
             <Link
               key={item.href}
               href={item.href}

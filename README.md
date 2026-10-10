@@ -20,6 +20,7 @@ Public-facing frontend for Event Hub. This Next.js application handles event dis
 - Email verification and OTP resend
 - Forgot-password flow with OTP verification and password reset
 - Authenticated user dashboard
+- Customer host applications with review status and rejected-application resubmission
 - Booking history and upcoming bookings
 - Profile avatar upload
 - Health route for runtime checks
@@ -36,6 +37,7 @@ Public-facing frontend for Event Hub. This Next.js application handles event dis
 - `/verify-email`
 - `/forgot-password`
 - `/dashboard`
+- `/become-a-host`
 - `/support`
 - `/healthz`
 
@@ -48,6 +50,7 @@ Main integrations:
 - auth: login, register, verify email, resend OTP, request password reset, verify password reset, reset password, profile, avatar upload
 - events: list, categories, event detail
 - bookings: create booking, current user bookings, booking detail
+- host applications: authenticated submission and current user's application status
 
 Default browser base URL:
 
@@ -73,10 +76,33 @@ Server-side data fetching also supports:
 
 ## Verification
 
-Run `npm test` for the focused Node contract tests (no additional test framework)
-and `npm run build` for the production build. Tests cover key reuse/change,
-network and token-refresh retries, booking headers and sold-out quantity controls.
+Run `npm test` for the focused Node tests and `npm run build` for the production
+build. Booking tests cover key reuse/change, network and token-refresh retries,
+booking headers and sold-out quantity controls. Host application tests mount the
+page in jsdom and exercise status rendering, submission/resubmission, customer
+navigation, authentication, safe errors and token-refresh retries using the real
+API helper with controlled HTTP responses.
 See [API_INTEGRATION.md](API_INTEGRATION.md) for live verification steps and limits.
+
+## Become a Host
+
+Authenticated USER/CUSTOMER accounts can open `/become-a-host` from the existing
+navigation. The page reads `GET /user-service/api/v1/host-applications/me`; 404
+shows the application form. Submission uses `POST /user-service/api/v1/host-applications`
+with only `organizationName` (required, at most 200 characters) and `reason`
+(optional, at most 2,000 characters). Existing token-refresh handling is reused.
+
+PENDING shows review status without another form. APPROVED shows dashboard
+guidance. REJECTED shows the rejection reason and allows editing and resubmission.
+A 409 refreshes current status. HOST/ADMIN accounts receive dashboard guidance
+instead of an application form; backend authorization remains authoritative.
+Signed-out users follow the existing `/login` flow.
+
+Set `NEXT_PUBLIC_HOST_DASHBOARD_URL` to the shared Angular dashboard's login URL
+(for example, `http://localhost:4200/login` during local development). This public
+setting is read at build time. The link does not transfer tokens between apps;
+approved applicants sign in there to obtain updated HOST authority. If unset,
+the page asks the user to obtain the dashboard URL from the administrator.
 
 ## Local Setup
 

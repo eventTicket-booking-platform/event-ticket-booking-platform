@@ -86,6 +86,26 @@ export type AuthResponse = StandardApiResponse<KeycloakTokenResponse>;
 export type AuthMessageResponse = StandardApiResponse<boolean | null>;
 export type UserProfileApiResponse = StandardApiResponse<UserProfileResponse>;
 
+export type HostApplicationPayload = {
+  organizationName: string;
+  reason: string;
+};
+
+export type HostApplication = {
+  id: string;
+  organizationName: string;
+  reason: string | null;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  appliedAt: string;
+  reviewedAt: string | null;
+  reviewedBy: string | null;
+  rejectionReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type HostApplicationApiResponse = StandardApiResponse<HostApplication>;
+
 export type CategoryDto = {
   categoryId: number;
   name: string;
