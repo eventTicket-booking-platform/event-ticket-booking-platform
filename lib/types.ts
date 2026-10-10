@@ -31,7 +31,7 @@ export type BookingTicketTier = {
   subtotal: number;
 };
 
-export type BookingStatus = "PENDING_PAYMENT" | "CONFIRMED" | "FAILED" | "CANCELLED" | "EXPIRED";
+export type BookingStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
 
 export type Booking = {
   id: string;

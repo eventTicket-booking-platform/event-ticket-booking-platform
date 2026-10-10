@@ -65,8 +65,8 @@ export default function DashboardPage() {
       const eventTime = booking.eventStartDateTime ? new Date(booking.eventStartDateTime).getTime() : Number.NaN;
       const hasEventTime = !Number.isNaN(eventTime);
       const isFuture = !Number.isNaN(eventTime) && eventTime >= now;
-      const status = booking.status as string;
-      const isActiveStatus = status === "CONFIRMED" || status === "PENDING_PAYMENT" || status === "PENDING";
+      const status = booking.status;
+      const isActiveStatus = status === "CONFIRMED" || status === "PENDING";
       const isUpcoming = isActiveStatus && (!hasEventTime || isFuture);
 
       if (tab === "upcoming") {

@@ -7,9 +7,8 @@ import { formatCurrency, formatDate, formatDateTime } from "@/lib/utils";
 
 const statusClassNames: Record<string, string> = {
   CONFIRMED: "border-emerald-400/20 bg-emerald-400/10 text-emerald-200",
-  PENDING_PAYMENT: "border-amber-400/20 bg-amber-400/10 text-amber-200",
+  PENDING: "border-amber-400/20 bg-amber-400/10 text-amber-200",
   CANCELLED: "border-rose-400/20 bg-rose-400/10 text-rose-200",
-  FAILED: "border-rose-400/20 bg-rose-400/10 text-rose-200",
   EXPIRED: "border-zinc-400/20 bg-zinc-400/10 text-zinc-200",
 };
 

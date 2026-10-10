@@ -90,10 +90,7 @@ export default function BookingPage({
     [event, quantities],
   );
 
-  const subtotal = selected.reduce((sum, tier) => sum + tier.price * tier.quantity, 0);
-  const serviceFee = subtotal * 0.1;
-  const tax = subtotal * 0.08;
-  const total = subtotal + serviceFee + tax;
+  const total = selected.reduce((sum, tier) => sum + tier.price * tier.quantity, 0);
   const ticketCount = selected.reduce((sum, tier) => sum + tier.quantity, 0);
   const canContinueDetails = ticketCount > 0 && selected.every((tier) => tier.quantity <= tier.available);
   const attendeeValid = Object.values(attendee).every(Boolean) && attendee.email.includes("@");
@@ -399,21 +396,9 @@ export default function BookingPage({
                 <span>Tickets</span>
                 <span>{ticketCount}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span>Subtotal</span>
-                <span>{formatFullCurrency(subtotal)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Service Fee</span>
-                <span>{formatFullCurrency(serviceFee)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Tax</span>
-                <span>{formatFullCurrency(tax)}</span>
-              </div>
               <div className="flex items-center justify-between border-t border-white/10 pt-3 text-base font-semibold text-white">
                 <span>Total</span>
-                <span>{formatFullCurrency(total)}</span>
+                <span>{formatFullCurrency(booking?.totalAmount ?? total)}</span>
               </div>
             </div>
           </Card>
