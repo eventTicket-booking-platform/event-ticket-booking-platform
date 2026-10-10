@@ -56,13 +56,27 @@ Default browser base URL:
 Server-side data fetching also supports:
 
 - `SERVER_API_BASE_URL`
-- `SERVER_EVENTS_API_BASE_URL`
+- `GATEWAY_API_BASE_URL`
 
 ## Notes on Current Behavior
 
 - Tokens are stored in `localStorage`.
 - There is refresh-token support in `lib/auth.ts`.
-- The app includes an API helper for booking cancel, but the current booking backend does not expose that endpoint.
+- Checkout sends one UUID as both `Idempotency-Key` and `X-Correlation-ID`.
+  It is retained for the mounted checkout's unchanged booking payload, including
+  retries after network errors and token refresh. Submitting changed event/tier/
+  quantity/payment data generates a new key. Reloading/leaving checkout loses
+  that in-memory key.
+- Ticket displays and selection limits use `availableQuantity`; zero is sold out.
+  Atomic backend reservation remains authoritative if the displayed stock is stale.
+- Booking cancellation is not exposed by the current backend.
+
+## Verification
+
+Run `npm test` for the focused Node contract tests (no additional test framework)
+and `npm run build` for the production build. Tests cover key reuse/change,
+network and token-refresh retries, booking headers and sold-out quantity controls.
+See [API_INTEGRATION.md](API_INTEGRATION.md) for live verification steps and limits.
 
 ## Local Setup
 

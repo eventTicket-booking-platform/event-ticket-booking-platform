@@ -27,7 +27,7 @@ export function TicketTierCard({
           <div className="flex items-center gap-3">
             <h3 className="text-xl font-semibold text-white">{tier.name}</h3>
             <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-white/60">
-              {tier.available} left
+              {tier.available === 0 ? "Sold out" : `${tier.available} left`}
             </span>
           </div>
           <p className="mt-3 text-sm leading-7 text-white/62">{tier.description}</p>
@@ -50,6 +50,7 @@ export function TicketTierCard({
               <button
                 type="button"
                 aria-label={`Decrease ${tier.name} tickets`}
+                disabled={tier.available <= 0 || (quantity ?? 0) <= 0}
                 onClick={() => onChange(Math.max(0, (quantity ?? 0) - 1))}
                 className="px-4 py-3 text-lg text-white/70 transition hover:text-white"
               >
@@ -59,6 +60,7 @@ export function TicketTierCard({
               <button
                 type="button"
                 aria-label={`Increase ${tier.name} tickets`}
+                disabled={tier.available <= 0 || (quantity ?? 0) >= tier.available}
                 onClick={() => onChange(Math.min(tier.available, (quantity ?? 0) + 1))}
                 className="px-4 py-3 text-lg text-white/70 transition hover:text-white"
               >

@@ -80,9 +80,9 @@ export default async function EventDetailPage({
               id: String(tier.ticketTypeId),
               name: tier.name,
               price: tier.price,
-              description: `Available quantity: ${tier.totalQuantity}`,
+              description: `Available quantity: ${tier.availableQuantity}`,
               benefits: [],
-              available: tier.totalQuantity,
+              available: tier.availableQuantity,
             }}
           />
         ))}

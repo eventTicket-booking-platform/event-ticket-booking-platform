@@ -121,11 +121,15 @@ export const api = {
     },
   },
   bookings: {
-    create(payload: BookingPayload, token: string) {
+    create(payload: BookingPayload, token: string, idempotencyKey: string) {
       return apiRequest<BookingResponse>("/booking-service/api/v1/bookings", {
         method: "POST",
         body: payload,
         token,
+        headers: {
+          "Idempotency-Key": idempotencyKey,
+          "X-Correlation-ID": idempotencyKey,
+        },
       });
     },
     mine(token: string, params: { page?: number; size?: number } = {}) {
@@ -140,12 +144,6 @@ export const api = {
         method: "GET",
         token,
         cache: "no-store",
-      });
-    },
-    cancel(id: number | string, token: string) {
-      return apiRequest<{ message: string }>(`/booking-service/api/v1/bookings/${id}/cancel`, {
-        method: "PATCH",
-        token,
       });
     },
   },

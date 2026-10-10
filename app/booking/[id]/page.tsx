@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { use, useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LockIcon } from "@/components/icons";
 import { TicketTierCard } from "@/components/ticket-tier-card";
@@ -10,7 +10,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useSnackbar } from "@/components/ui/snackbar";
 import { api, ApiError } from "@/lib/api";
-import type { BookingResponse, EventDetailDto } from "@/lib/api/types";
+import type { BookingPayload, BookingResponse, EventDetailDto } from "@/lib/api/types";
+import { resolveBookingSubmission, type BookingSubmission } from "@/lib/booking-submission";
 import { getStoredAccessToken } from "@/lib/auth";
 import { formatCurrency, formatDateTime, formatFullCurrency } from "@/lib/utils";
 
@@ -27,6 +28,8 @@ export default function BookingPage({
   const [event, setEvent] = useState<EventDetailDto | null>(null);
   const [step, setStep] = useState<Step>(1);
   const [processing, setProcessing] = useState(false);
+  const submission = useRef<BookingSubmission | null>(null);
+  const submitting = useRef(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [booking, setBooking] = useState<BookingResponse | null>(null);
@@ -80,7 +83,7 @@ export default function BookingPage({
           id: tier.ticketTypeId,
           name: tier.name,
           price: tier.price,
-          available: tier.totalQuantity,
+          available: tier.availableQuantity,
           quantity: quantities[tier.ticketTypeId] ?? 0,
         }))
         .filter((tier) => tier.quantity > 0),
@@ -92,12 +95,13 @@ export default function BookingPage({
   const tax = subtotal * 0.08;
   const total = subtotal + serviceFee + tax;
   const ticketCount = selected.reduce((sum, tier) => sum + tier.quantity, 0);
-  const canContinueDetails = ticketCount > 0;
+  const canContinueDetails = ticketCount > 0 && selected.every((tier) => tier.quantity <= tier.available);
   const attendeeValid = Object.values(attendee).every(Boolean) && attendee.email.includes("@");
   const paymentValid =
     payment.cardNumber.replace(/\s/g, "").length >= 16 && payment.expiry.length === 5 && payment.cvv.length >= 3;
 
   async function nextStep() {
+    if (submitting.current) return;
     if (step === 1 && canContinueDetails) {
       setStep(2);
       return;
@@ -108,7 +112,7 @@ export default function BookingPage({
       return;
     }
 
-    if (step !== 3 || !paymentValid || !event) {
+    if (step !== 3 || !paymentValid || !canContinueDetails || !event) {
       return;
     }
 
@@ -119,19 +123,23 @@ export default function BookingPage({
       return;
     }
 
+    const payload: BookingPayload = {
+      eventId: event.eventId,
+      ticketSelections: selected.map((tier) => ({
+        ticketTypeId: tier.id,
+        quantity: tier.quantity,
+      })),
+      paymentMethod: "CARD",
+    };
+    submission.current = resolveBookingSubmission(submission.current, payload);
+    submitting.current = true;
     setProcessing(true);
 
     try {
       const response = await api.bookings.create(
-        {
-          eventId: event.eventId,
-          ticketSelections: selected.map((tier) => ({
-            ticketTypeId: tier.id,
-            quantity: tier.quantity,
-          })),
-          paymentMethod: "CARD",
-        },
+        payload,
         token,
+        submission.current.key,
       );
 
       setBooking(response);
@@ -145,6 +153,7 @@ export default function BookingPage({
       }
       snackbar.error(err instanceof Error ? err.message : "Failed to create booking");
     } finally {
+      submitting.current = false;
       setProcessing(false);
     }
   }
@@ -214,11 +223,14 @@ export default function BookingPage({
                     name: tier.name,
                     price: tier.price,
                     description: "Live ticket inventory from the event service.",
-                    benefits: [`Available quantity: ${tier.totalQuantity}`],
-                    available: tier.totalQuantity,
+                    benefits: [`Available quantity: ${tier.availableQuantity}`],
+                    available: tier.availableQuantity,
                   }}
                   quantity={quantities[tier.ticketTypeId] ?? 0}
-                  onChange={(next) => setQuantities((current) => ({ ...current, [tier.ticketTypeId]: next }))}
+                  onChange={(next) => setQuantities((current) => ({
+                    ...current,
+                    [tier.ticketTypeId]: Math.max(0, Math.min(tier.availableQuantity, next)),
+                  }))}
                 />
               ))}
             </div>
@@ -341,6 +353,7 @@ export default function BookingPage({
                 <button
                   type="button"
                   onClick={() => setStep((current) => (current - 1) as Step)}
+                  disabled={processing}
                   className="text-sm font-semibold text-white/70"
                 >
                   Back
@@ -352,7 +365,7 @@ export default function BookingPage({
                   processing ||
                   (step === 1 && !canContinueDetails) ||
                   (step === 2 && !attendeeValid) ||
-                  (step === 3 && !paymentValid)
+                  (step === 3 && (!paymentValid || !canContinueDetails))
                 }
               >
                 {processing ? "Processing..." : step === 1 ? "Continue to Details" : step === 2 ? "Continue to Payment" : "Confirm Booking"}

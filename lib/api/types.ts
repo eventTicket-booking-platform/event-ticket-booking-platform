@@ -108,6 +108,7 @@ export type TicketTypeDto = {
   name: string;
   price: number;
   totalQuantity: number;
+  availableQuantity: number;
 };
 
 export type VenueDto = {
